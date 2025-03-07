@@ -5,22 +5,22 @@
 ### Collecting Videos
 1. Downloading videos IDs from YouTube for a given channel id:
 ```
-youtube-dl -i --get-id https://www.youtube.com/user/MovieclipsTrailers | tee MovieTrailers.txt
-youtube-dl -i --get-id https://www.youtube.com/user/Movieclips | tee MovieScenes.txt
+yt-dlp -i --get-id https://www.youtube.com/user/MovieclipsTrailers | tee MovieTrailers.txt
+yt-dlp -i --get-id https://www.youtube.com/user/Movieclips | tee MovieScenes.txt
 ```
 2. Downloading videos IDs uploaded after a particular date (YYYYMMDD):
 #### Trailers
 ```
-youtube-dl -i --dateafter 20191201 --match-filter "like_count > 100 & dislike_count <? 50" --get-id --get-title --get-duration --match-title "trailer"  https://www.youtube.com/user/MovieclipsTrailers | tee MovieTrailers.txt
-youtube-dl -i --dateafter 20191201 --match-filter "like_count > 100 & dislike_count <? 50" --get-id --get-title --get-duration --match-title "trailer"  https://www.youtube.com/user/Filme | tee MovieTrailers-2.txt 
+yt-dlp -i --dateafter 20191201 --match-filter "like_count > 100 & dislike_count <? 50" --get-id --get-title --get-duration --match-title "trailer"  https://www.youtube.com/user/MovieclipsTrailers | tee MovieTrailers.txt
+yt-dlp -i --dateafter 20191201 --match-filter "like_count > 100 & dislike_count <? 50" --get-id --get-title --get-duration --match-title "trailer"  https://www.youtube.com/user/Filme | tee MovieTrailers-2.txt 
 ```
 #### Scenes
 ```
-youtube-dl -i --dateafter 20191201 --match-filter "like_count > 100 & dislike_count <? 50" --get-id --get-title --get-duration https://www.youtube.com/user/MovieClips | tee MovieScenes.txt
+yt-dlp -i --dateafter 20191201 --match-filter "like_count > 100 & dislike_count <? 50" --get-id --get-title --get-duration https://www.youtube.com/user/MovieClips | tee MovieScenes.txt
 ```
 3. Getting videos from YouTube according to a file containing YouTube Ids
 ```
-youtube-dl -i --output "YTID_%(id)s.%(ext)s" -a <file.txt> -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4'
+yt-dlp -i --output "YTID_%(id)s.%(ext)s" -a <file.txt> -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4'
 ```
 4. Converting videos in other formats to mp4
 ```
@@ -111,7 +111,7 @@ for id in `cut -c1-11  metadata/moviescenes-metadata-Titles.tsv`; do
     x="$id,,,"; 
   fi; 
   echo $x;
-done > >(tee rel-Titles-statistics.csv
+done > >(tee rel-Titles-statistics.csv)
 ```
 # YouTube Video Scraper and IMDb Metadata Fetcher
 
