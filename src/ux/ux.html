@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trailer Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #ffffff;
+            color: #1a1a1a;
+            line-height: 1.5;
+            font-size: 16px;
+        }
+
+        .screen {
+            display: none;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 16px;
+            min-height: 100vh;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-top: 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .upload-section {
+            background: #f8f9fa;
+            border: 1px dashed #ccc;
+            border-radius: 12px;
+            padding: 24px 16px;
+            text-align: center;
+            margin-bottom: 24px;
+            transition: all 0.2s ease;
+        }
+
+        .upload-section:active {
+            background: #f0f2f5;
+            border-color: #999;
+        }
+
+        .upload-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .upload-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #1a1a1a;
+        }
+
+        .upload-section p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            color: #1a1a1a;
+            font-size: 16px;
+            -webkit-appearance: none;
+        }
+
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #007AFF;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        .input-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: #007AFF;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s ease;
+            -webkit-appearance: none;
+        }
+
+        .btn:active {
+            background: #0056CC;
+            transform: scale(0.98);
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .progress-container {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px 16px;
+            margin-bottom: 24px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e5e7;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #007AFF;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #666;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .match-card {
+            background: white;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .match-card h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+
+        .match-card p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .timeline-container {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px 16px;
+            margin-bottom: 24px;
+        }
+
+        .timeline-container h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+
+        .timeline {
+            position: relative;
+            height: 60px;
+            background: #e5e5e7;
+            border-radius: 8px;
+            margin: 16px 0;
+            overflow-x: auto;
+        }
+
+        .cut-marker {
+            position: absolute;
+            top: 8px;
+            bottom: 8px;
+            background: #007AFF;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .cut-marker:active {
+            background: #0056CC;
+        }
+
+        .motion-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .motion-card {
+            background: white;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .motion-card.selected {
+            border-color: #007AFF;
+            background: rgba(0, 122, 255, 0.05);
+        }
+
+        .motion-card:active {
+            transform: scale(0.95);
+        }
+
+        .motion-card h5 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #1a1a1a;
+        }
+
+        .motion-card p {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .motion-card small {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .thumbnail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .thumbnail-card {
+            background: white;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .thumbnail-card.selected {
+            border-color: #007AFF;
+            background: rgba(0, 122, 255, 0.05);
+        }
+
+        .thumbnail-card:active {
+            transform: scale(0.95);
+        }
+
+        .thumbnail-preview {
+            width: 100%;
+            height: 80px;
+            background: #f0f2f5;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .thumbnail-card p {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            color: #1a1a1a;
+        }
+
+        .thumbnail-card small {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .video-player {
+            width: 100%;
+            margin: 0 auto 24px;
+            background: white;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 200px;
+            background: #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #666;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #e5e5e7;
+        }
+
+        .controls button {
+            background: none;
+            border: none;
+            color: #007AFF;
+            font-size: 18px;
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .controls span {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .nav-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px 0;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 8px 16px;
+            border: 1px solid #e5e5e7;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ccc;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-dot.active {
+            background: #007AFF;
+            transform: scale(1.2);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .status-processing {
+            background: rgba(255, 149, 0, 0.1);
+            color: #FF9500;
+        }
+
+        .status-complete {
+            background: rgba(52, 199, 89, 0.1);
+            color: #34C759;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 16px 0 24px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #007AFF;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            padding: 12px 16px;
+            border: 1px solid #007AFF;
+            background: white;
+            color: #007AFF;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:active {
+            background: #f0f8ff;
+            transform: scale(0.95);
+        }
+
+        .action-btn.primary {
+            background: #007AFF;
+            color: white;
+        }
+
+        .action-btn.primary:active {
+            background: #0056CC;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        .safe-area {
+            padding-bottom: 80px;
+        }
+
+        @media (max-width: 375px) {
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .thumbnail-grid,
+            .motion-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Screen 1: Input -->
+    <div class="screen active" id="screen1">
+        <div class="safe-area">
+            <div class="header">
+                <h1>🎬 Trailer Generator</h1>
+                <p>Create professional trailers in seconds</p>
+            </div>
+
+            <div class="upload-section" onclick="document.querySelector('input[type=file]').click()">
+                <div class="upload-icon">📁</div>
+                <h3>Upload Video</h3>
+                <p>Tap to select your video file</p>
+            </div>
+
+            <div class="input-group">
+                <label>📁 Video File</label>
+                <input type="file" accept="video/*" style="display: none;">
+                <input type="text" placeholder="No file selected" readonly>
+            </div>
+
+            <div class="input-group">
+                <label>📝 Script (Optional)</label>
+                <textarea placeholder="Paste your script or leave empty for auto-generation..."></textarea>
+            </div>
+
+            <div class="input-group">
+                <label>🔗 Reference URL</label>
+                <input type="url" placeholder="YouTube trailer for style reference">
+            </div>
+
+            <div class="input-group">
+                <label>🎭 Style</label>
+                <input type="text" placeholder="Action, Drama, Documentary...">
+            </div>
+
+            <button class="btn" onclick="nextScreen(2)">Create Trailer</button>
+        </div>
+    </div>
+
+    <!-- Screen 2: Processing -->
+    <div class="screen" id="screen2">
+        <div class="safe-area">
+            <div class="header">
+                <h1>🔍 Processing</h1>
+                <p>Analyzing your content</p>
+            </div>
+
+            <div class="progress-container">
+                <div class="status-badge status-processing">Processing</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress"></div>
+                </div>
+                <div class="progress-text" id="progressText">Analyzing narrative... 45%</div>
+            </div>
+
+            <div class="match-card">
+                <h4>🎯 Best Match</h4>
+                <p><strong>Template:</strong> Action Hero</p>
+                <p><strong>Similarity:</strong> 92%</p>
+                <div class="status-badge status-complete">Matched</div>
+            </div>
+
+            <div class="match-card">
+                <h4>📊 Analysis</h4>
+                <p><strong>Characters:</strong> 3 detected</p>
+                <p><strong>Style:</strong> Fast-paced</p>
+                <div class="status-badge status-complete">Complete</div>
+            </div>
+
+            <div class="timeline-container">
+                <h4>🎞️ Key Moments</h4>
+                <p style="font-size: 14px; color: #666; margin-bottom: 12px;">5 segments identified</p>
+                <div class="timeline">
+                    <div class="cut-marker" style="left: 5%; width: 3px;"></div>
+                    <div class="cut-marker" style="left: 25%; width: 4px;"></div>
+                    <div class="cut-marker" style="left: 45%; width: 3px;"></div>
+                    <div class="cut-marker" style="left: 65%; width: 5px;"></div>
+                    <div class="cut-marker" style="left: 85%; width: 2px;"></div>
+                </div>
+                <p style="font-size: 12px; color: #999; text-align: center;">~90 second trailer</p>
+            </div>
+
+            <button class="btn" onclick="nextScreen(3)">Next Step</button>
+        </div>
+    </div>
+
+    <!-- Screen 3: Customization -->
+    <div class="screen" id="screen3">
+        <div class="safe-area">
+            <div class="header">
+                <h1>🎥 Customize</h1>
+                <p>Add camera effects and choose thumbnail</p>
+            </div>
+
+            <div class="section-title">Camera Effects</div>
+            <div class="motion-grid">
+                <div class="motion-card selected">
+                    <h5>📹 Dolly-In</h5>
+                    <p>0:15 - 0:18</p>
+                    <small>Character intro</small>
+                </div>
+                <div class="motion-card">
+                    <h5>🔄 Pan-Fast</h5>
+                    <p>1:20 - 1:25</p>
+                    <small>Action scene</small>
+                </div>
+                <div class="motion-card">
+                    <h5>🚁 Crane-Up</h5>
+                    <p>2:45 - 2:50</p>
+                    <small>Epic moment</small>
+                </div>
+                <div class="motion-card selected">
+                    <h5>⚡ Zoom-In</h5>
+                    <p>4:10 - 4:15</p>
+                    <small>Climax</small>
+                </div>
+            </div>
+
+            <div class="section-title">Choose Thumbnail</div>
+            <div class="thumbnail-grid">
+                <div class="thumbnail-card selected">
+                    <div class="thumbnail-preview">🎭</div>
+                    <p>Hero Close-up</p>
+                    <small>0:45</small>
+                </div>
+                <div class="thumbnail-card">
+                    <div class="thumbnail-preview">💥</div>
+                    <p>Action Shot</p>
+                    <small>2:30</small>
+                </div>
+                <div class="thumbnail-card">
+                    <div class="thumbnail-preview">🌅</div>
+                    <p>Epic Scene</p>
+                    <small>1:15</small>
+                </div>
+                <div class="thumbnail-card">
+                    <div class="thumbnail-preview">⚔️</div>
+                    <p>Dramatic</p>
+                    <small>4:05</small>
+                </div>
+            </div>
+
+            <button class="btn" onclick="nextScreen(4)">Generate Final</button>
+        </div>
+    </div>
+
+    <!-- Screen 4: Result -->
+    <div class="screen" id="screen4">
+        <div class="safe-area">
+            <div class="header">
+                <h1>✨ Trailer Ready</h1>
+                <p>Generated in 42 seconds</p>
+            </div>
+
+            <div class="video-player">
+                <div class="video-placeholder">▶️</div>
+                <div class="controls">
+                    <button>▶️</button>
+                    <span>0:00 / 1:32</span>
+                    <button>⚙️</button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-value">1080p</span>
+                    <span class="stat-label">Resolution</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">1:32</span>
+                    <span class="stat-label">Duration</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">42s</span>
+                    <span class="stat-label">Process Time</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">MP4</span>
+                    <span class="stat-label">Format</span>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn primary">📥 Download</button>
+                <button class="action-btn">🔗 Share</button>
+                <button class="action-btn">🎨 Edit</button>
+                <button class="action-btn">🔄 New</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Dots -->
+    <div class="nav-dots">
+        <button class="nav-dot active" onclick="showScreen(1)"></button>
+        <button class="nav-dot" onclick="showScreen(2)"></button>
+        <button class="nav-dot" onclick="showScreen(3)"></button>
+        <button class="nav-dot" onclick="showScreen(4)"></button>
+    </div>
+
+    <script>
+        let currentScreen = 1;
+        let progressInterval;
+
+        function showScreen(screenNum) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            document.getElementById(`screen${screenNum}`).classList.add('active');
+            
+            document.querySelectorAll('.nav-dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === screenNum - 1);
+            });
+            
+            currentScreen = screenNum;
+            
+            if (screenNum === 2) {
+                startProgress();
+            } else {
+                stopProgress();
+            }
+        }
+
+        function nextScreen(screenNum) {
+            showScreen(screenNum);
+        }
+
+        function startProgress() {
+            let progress = 0;
+            const progressFill = document.getElementById('progress');
+            const progressText = document.getElementById('progressText');
+            
+            const stages = [
+                "Extracting narrative...",
+                "Analyzing characters...",
+                "Matching templates...",
+                "Finding key moments...",
+                "Processing complete!"
+            ];
+            
+            let stageIndex = 0;
+            
+            progressInterval = setInterval(() => {
+                progress += Math.random() * 15 + 5;
+                if (progress > 100) progress = 100;
+                
+                progressFill.style.width = progress + '%';
+                
+                if (progress > stageIndex * 20 && stageIndex < stages.length - 1) {
+                    stageIndex++;
+                    progressText.textContent = stages[stageIndex] + ` ${Math.round(progress)}%`;
+                }
+                
+                if (progress >= 100) {
+                    progressText.textContent = "Ready for next step";
+                    clearInterval(progressInterval);
+                }
+            }, 400);
+        }
+
+        function stopProgress() {
+            if (progressInterval) {
+                clearInterval(progressInterval);
+            }
+        }
+
+        // Interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Thumbnail selection
+            document.querySelectorAll('.thumbnail-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    document.querySelectorAll('.thumbnail-card').forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Motion card selection
+            document.querySelectorAll('.motion-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                });
+            });
+
+            // File input handling
+            const fileInput = document.querySelector('input[type="file"]');
+            const fileDisplay = document.querySelector('input[readonly]');
+            
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    fileDisplay.value = this.files[0].name;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
